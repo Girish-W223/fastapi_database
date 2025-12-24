@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import FastAPI,HTTPException,Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -8,16 +9,17 @@ app=FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:5173"],
     allow_methods=['*']
 )
 
 create_table()
 
-@app.get('/movie')
+@app.get('/movie',response_model=List[schema.movie_show])
 def get_all(db:Session=Depends(get_db)):
-    return db.query(models.Movie).all()
-
+    movie_data=db.query(models.Movie).all()
+    #print(movie_data[0].id)
+    return movie_data
 
 @app.post('/movie')
 def create_new(mov:schema.movie_create,db:Session=Depends(get_db)):
